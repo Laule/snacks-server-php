@@ -10,6 +10,7 @@ namespace app\api\controller\v1;
 
 use app\api\model\Banner as BannerModel;
 use app\api\validate\IDMustBePostiveInt;
+use app\lib\exception\BannerMissException;
 use think\Exception;//别名
 class Banner
 {
@@ -22,10 +23,12 @@ class Banner
         //拦截器 、 如果请求的数据不符合 直接过滤掉这次请求
         (new IDMustBePostiveInt())->goCheck();
 
-         $banner = BannerModel::getBannerByID($id);
+        $banner = BannerModel::getBannerByID($id);
 
-         return $banner;
-
-
+        //如果Banner为空 抛出Miss
+        if (!$banner) {
+           throw new BannerMissException();
+        }
+        return $banner;
     }
 }
