@@ -9,8 +9,6 @@
 namespace app\lib\exception;
 
 
-use think\Config;
-use think\Exception;
 use think\exception\Handle;
 use think\Log;
 use think\Request;
@@ -25,7 +23,7 @@ class ExceptionHandler extends Handle
     private $errorCode;
 
     //需要返回客户端当前请求的URL路径
-    public function render(Exception $e)
+    public function render(\Exception $e)
     {
 //       [instanceof] 作用：（1）判断一个对象是否是某个类的实例，（2）判断一个对象是否实现了某个接口。
         if ($e instanceof BaseException) {
@@ -60,7 +58,7 @@ class ExceptionHandler extends Handle
         return json($result, $this->code);
     }
 
-    private function recordErrorLog(Exception $e)
+    private function recordErrorLog(\Exception $e)
     {
         Log::init([ //初始化日志配置
             'type' => 'File',
