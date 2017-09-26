@@ -27,7 +27,9 @@ class Banner
 
         //如果Banner为空 抛出Miss
         if (!$banner) {
-           throw new BannerMissException();
+//           throw new BannerMissException();
+            throw new Exception('内部错误');
+
         }
         return $banner;
     }
