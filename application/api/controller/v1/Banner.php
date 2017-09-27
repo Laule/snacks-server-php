@@ -23,12 +23,18 @@ class Banner
         //拦截器 、 如果请求的数据不符合 直接过滤掉这次请求
         (new IDMustBePostiveInt())->goCheck();
 
-        $banner = BannerModel::getBannerByID($id);
+//        $banner = BannerModel::getBannerByID($id);
+//        $banner = new BannerModel();
+//        $banner = $banner->get($id);
+//        (get,find 只能查询一条记录 或者说只能返回一条数据),（all,select 一组记录  一组对象）
+//         get,all  模型特有的方法 find select Db 特有的方法
+//         使用Db 不能使用get all , 使用模型可以使用 find select
 
+        $banner = BannerModel::find($id);
         //如果Banner为空 抛出Miss
         if (!$banner) {
-           throw new BannerMissException();
+            throw new BannerMissException();
         }
-        return json($banner);
+        return $banner;
     }
 }

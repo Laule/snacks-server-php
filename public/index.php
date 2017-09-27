@@ -18,3 +18,11 @@ define('APP_PATH', __DIR__ . '/../application/');
 define('LOG_PATH', __DIR__ . '/../log/');
 // 加载框架引导文件
 require __DIR__ . '/../thinkphp/start.php';
+
+
+//在这里配置sql 日志 每个请求过来都会经过这个入口文件（初始化全局日志记录
+\think\Log::init([
+    'type' => 'File',
+    'path' => LOG_PATH,
+    'level' => ['sql']
+]);
