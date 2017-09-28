@@ -8,30 +8,24 @@
 
 namespace app\api\controller\v1;
 
+//别名
 use app\api\model\Banner as BannerModel;
 use app\api\validate\IDMustBePostiveInt;
 use app\lib\exception\BannerMissException;
-use think\Exception;//别名
+
 class Banner
 {
+
     //获取指定id的Banner信息
     //@$url / banner /:id
     //@http GET
     //@id banner 的 id 号
     public function getBanner($id)
     {
-        //拦截器 、 如果请求的数据不符合 直接过滤掉这次请求
+        //  拦截器 、 如果请求的数据不符合 直接过滤掉这次请求
         (new IDMustBePostiveInt())->goCheck();
 
-//        $banner = BannerModel::getBannerByID($id);
-//        $banner = new BannerModel();
-//        $banner = $banner->get($id);
-//        (get,find 只能查询一条记录 或者说只能返回一条数据),（all,select 一组记录  一组对象）
-//         get,all  模型特有的方法 find select Db 特有的方法
-//         使用Db 不能使用get all , 使用模型可以使用 find select
-
-        $banner = BannerModel::find($id);
-        //如果Banner为空 抛出Miss
+        $banner = BannerModel::getBannerByID($id);
         if (!$banner) {
             throw new BannerMissException();
         }

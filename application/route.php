@@ -13,7 +13,7 @@
 //Route::rule('路由表达式'，'路由地址'，‘请求类型’，‘路由参数（数组）’，‘变量规则（数组）’);
 //GET ,POST ,DELETE ,PUT ,*
 //Route::rule('hello','sample/Test/hello','GET|POST|PUT',['https'=>false]);
-
+//这里传一个:version 来控制版本号
 use think\Route;
 
-Route::get('api/v1/banner/:id','api/v1.Banner/getBanner');
+Route::get('api/:version/banner/:id','api/:version.Banner/getBanner');

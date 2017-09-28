@@ -9,28 +9,24 @@
 namespace app\api\model;
 
 
-use think\Db;
-use think\Model;
-
-class Banner extends Model
+class Banner extends BaseModel
 {
-//    protected $table='category';
+    //需要隐藏的字段
+    protected $hidden = ['update_time','delete_time'];
+
+    public function items()
+    {
+//      关联模型的模型名字、关联模型外键id,当前模型主键id
+        return $this->hasMany('BannerItem', 'banner_id', 'id');
+    }
+
     public static function getBannerByID($id)
     {
 
-//        $result=
-//        Db::query('select * from banner_item where banner_id=?',[$id]);
-//        return $result;
-//        $result = Db::table('banner_item')->where('banner_id', '=', $id)->select();
-//        where('字段名','表达式','查询条件')
-         //model 处理业务逻辑
-        //表达式、数组法、闭包
-        //在where里面传递一个匿名函数
-        $result = Db::table('banner_item')
-            ->where(function ($query)use ($id){
-                $query->where('banner_id','=',$id);
-            })
-            ->select();
-        return $result;
+        $banner = self::with((['items', 'items.img']))
+            ->find($id);
+
+        return $banner;
+
     }
 }
