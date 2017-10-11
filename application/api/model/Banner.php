@@ -12,7 +12,7 @@ namespace app\api\model;
 class Banner extends BaseModel
 {
     //需要隐藏的字段
-    protected $hidden = ['update_time','delete_time'];
+    protected $hidden = ['update_time', 'delete_time'];
 
     public function items()
     {
@@ -22,11 +22,8 @@ class Banner extends BaseModel
 
     public static function getBannerByID($id)
     {
-
         $banner = self::with((['items', 'items.img']))
             ->find($id);
-
         return $banner;
-
     }
 }
