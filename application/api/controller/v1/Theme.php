@@ -10,6 +10,9 @@ namespace app\api\controller\v1;
 
 
 use app\api\validate\IDCollection;
+use app\api\model\Theme as ThemeModel;
+use app\api\validate\IDMustBePostiveInt;
+use app\lib\exception\ThemeException;
 
 class Theme
 {
@@ -20,6 +23,25 @@ class Theme
     public function getSimpleList($ids = '')
     {
         (new IDCollection())->goCheck();
-        return 'this is getSimpleList';
+        $ids = explode(',', $ids);
+        $result = ThemeModel::with('topicImg,headImg')
+            ->select($ids);
+        if (!$result) {
+            throw new ThemeException();
+        }
+        return $result;
+    }
+
+    /**
+     * @url /theme/:id
+     */
+    public function getComplexOne($id)
+    {
+        (new IDMustBePostiveInt())->goCheck();
+        $themes = ThemeModel::getThemeWithProducts($id);
+        if (!$themes) {
+            throw new ThemeException();
+        }
+        return $themes;
     }
 }
