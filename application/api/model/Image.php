@@ -11,7 +11,7 @@ namespace app\api\model;
 // 子类
 class Image extends BaseModel
 {
-    protected $hidden = ['id', 'form', 'update_time', 'delete_time'];
+    protected $hidden = ['id', 'from', 'update_time', 'delete_time'];
 
 //    对于 private 、 public 这些个公共的方法 如果把它设置在基类里面的话子类会自动继承
 
