@@ -19,12 +19,12 @@ class Product extends BaseModel
     {
         return $this->prefixImgUrl($value, $data);
     }
-
+    //商品图片
     public function imgs()
     {
         return $this->hasMany('ProductImage', 'product_id', 'id');
     }
-
+    //商品详情
     public function properties()
     {
         return $this->hasMany('ProductProperty', 'product_id', 'id');
@@ -48,7 +48,13 @@ class Product extends BaseModel
 
     public static function getProductDetail($id)
     {
-        $product = self::with('imgs,properties')
+        $product = self::with([
+            'imgs' => function ($query) {
+                $query->with(['imgUrl'])
+                ->order('order','asc');
+            }
+        ])
+            ->with(['properties'])
             ->find($id);
         return $product;
     }
