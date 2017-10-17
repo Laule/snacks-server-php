@@ -14,19 +14,32 @@
 //GET ,POST ,DELETE ,PUT ,*
 //Route::rule('hello','sample/Test/hello','GET|POST|PUT',['https'=>false]);
 //这里传一个:version 来控制版本号
+//TP5 路由查找是顺序查找 如果匹配到第一个地址，就不会进入第二个地址。这时候便需要限制规则
+
 use think\Route;
 
-Route::get('api/:version/banner/:id','api/:version.Banner/getBanner');
+//Banner
 
-Route::get('api/:version/theme','api/:version.Theme/getSimpleList');
+Route::get('api/:version/banner/:id', 'api/:version.Banner/getBanner');
 
-Route::get('api/:version/theme/:id','api/:version.Theme/getComplexOne');
+//专题
+Route::group('api/:version/theme', function () {
+    Route::get('', 'api/:version.Theme/getSimpleList');
+    Route::get('/:id', 'api/:version.Theme/getComplexOne');
+});
 
-Route::get('api/:version/product/recent','api/:version.Product/getRecent');
+//商品
+Route::group('api/:version/product', function () {
+    Route::get('/by_category', 'api/:version.Product/getAllInCategory');
+    Route::get('/:id', 'api/:version.Product/getOne', [], ['id' => '\d+']);
+    Route::get('/recent', 'api/:version.Product/getRecent');
+});
 
-Route::get('api/:version/product/by_category','api/:version.Product/getAllInCategory');
 
-Route::get('api/:version/category/all','api/:version.Category/getAllCategories');
+//分类
+Route::get('api/:version/category/all', 'api/:version.Category/getAllCategories');
 
-Route::post('api/:version/token/user','api/:version.Token/getToken');
+
+//Token
+Route::post('api/:version/token/user', 'api/:version.Token/getToken');
 

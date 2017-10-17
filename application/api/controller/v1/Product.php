@@ -26,15 +26,26 @@ class Product
         $products = $products->hidden(['summary']);
         return $products;
     }
+
     public function getAllInCategory($id)
     {
         (new IDMustBePostiveInt())->goCheck();
-        $products=ProductModel::getProductByCategoryID($id);
-        if($products->isEmpty())
-        {
+        $products = ProductModel::getProductByCategoryID($id);
+        if ($products->isEmpty()) {
             throw new  ProductException();
         }
         $products = $products->hidden(['summary']);
         return $products;
+    }
+
+    public function getOne($id)
+    {
+        (new IDMustBePostiveInt())->goCheck();
+        $product = ProductModel::getProductDetail($id);
+        if (!$product) {
+            throw new ProductException();
+        } else {
+            return $product;
+        }
     }
 }

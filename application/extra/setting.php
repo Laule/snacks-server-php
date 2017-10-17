@@ -6,5 +6,6 @@
  * Time: 14:12
  */
 return [
-    'img_prefix' => 'http://lyj.cn:8095/images'
+    'img_prefix' => 'http://lyj.cn:8095/images',
+    'token_expire_in' => 7200
 ];

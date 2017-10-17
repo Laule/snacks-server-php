@@ -14,11 +14,13 @@ use app\api\validate\TokenGet;
 
 class Token
 {
-    public function getToken($code ='')
+    public function getToken($code = '')
     {
         (new TokenGet())->goCheck();
         $ut = new UserToken($code);
         $token = $ut->get();
-        return $token;
+        return [
+            'token' => $token
+        ];
     }
 }
