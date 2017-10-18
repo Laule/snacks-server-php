@@ -10,6 +10,8 @@ namespace app\api\controller\v1;
 
 
 use app\api\controller\BaseController;
+use app\api\validate\OrderPlace;
+use app\api\service\Token as TokenService;
 
 class Order extends BaseController
 {
@@ -30,6 +32,11 @@ class Order extends BaseController
 
     public function placeOrder()
     {
+        (new OrderPlace())->goCheck();
+        //在后面加一个a才能获取数组
+        $products = input('post.products/a');
+        $uid = TokenService::getCurrentUid();
+
 
     }
 
