@@ -9,14 +9,18 @@
 namespace app\api\service;
 
 
+use app\api\model\OrderProduct;
 use app\api\model\Product;
+use app\api\model\UserAddress;
 use app\lib\exception\OrderException;
+use app\lib\exception\UserException;
+use app\api\service\Order as OrderModel;
+use think\Exception;
 
 class Order
 {
     // 订单的商品列表，也就是客户端传递过来的product参数
     protected $oProducts;
-
     // 真实的商品信息（包括库存量）
     protected $products;
 
@@ -26,11 +30,104 @@ class Order
     {
         // oProduct 和 products 库存对比
         // products 从数据库中查询出来的
-
         $this->oProducts = $oProducts;
         $this->products = $this->getProductsByOrder($oProducts);
         $this->uid = $uid;
+        $status = $this->getOrderStatus();
+        // 库存量检测失败 order_id -1
+        if (!$status['pass']) {
+            $status['order_id'] = -1;
+            return $status;
+        }
+        // 开始创建订单
+        $orderSnap = $this->snapOrder($status);
 
+
+    }
+
+    private function createOrder($snap)
+    {
+        // 对复杂的业务操作 或 数据库操作 最好加一个异常处理
+        try {
+            $orderNo = $this->markOrderNo();
+            $order = new OrderModel();
+            $order->user_id = $this->uid;
+            $order->order_no = $orderNo;
+            $order->total_price = $snap['orderPrice'];
+            $order->total_count = $snap['totalCount'];
+            $order->snap_img = $snap['snapImg'];
+            $order->snap_name = $snap['snapName'];
+            $order->snap_address = $snap['snapAddress'];
+            $order->snap_items = json_encode($snap['pStatus']);
+
+            $order->save();
+
+            $orderID = $order->id;
+            $create_time = $order->create_time;
+            // 需要加一个引用符号 这样才能对数组的属性进行操作
+            // foreach作用: 修改了oProduct 修改完之后再保存  为oProduct每个子元素新增一个OrderId
+            foreach ($this->oProducts as &$p) {
+                $p['order_id'] = $orderID;
+            }
+            $orderProduct = new OrderProduct();
+            $orderProduct->saveAll($this->oProducts);
+            return
+                [
+                    'order_no' => $orderNo,
+                    'order_id' => $orderID,
+                    'order_time' => $create_time
+                ];
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+    }
+
+
+    public static function markOrderNo()
+    {
+        // dechex() 把10进制转换成16进制  strtoupper()转换成大写字符串 microtime 时间戳的微秒数
+        $yCode = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J');
+        $orderSn =
+            $yCode[intval(date('Y')) - 2017] . strtoupper(dechex(date('m'))) . date('d') .
+            substr(time(), -5) . substr(microtime(), 2, 5) . sprintf('%02d', rand(0, 99));
+        return $orderSn;
+    }
+
+    // 生成订单快照
+    private function snapOrder($status)
+    {
+        $snap = [
+            'orderPrice' => 0,
+            'totalCount' => 0,
+            'pStatus' => [],
+            'snapAddress' => null,
+            // 订单缩略名字
+            'snapName' => '',
+            'snapImg' => '',
+        ];
+        $snap['orderPrice'] = $status['orderPrice'];
+        $snap['totalCount'] = $status['totalCount'];
+        $snap['pStatus'] = $status['pStatusArray'];
+        $snap['snapAddress'] = json_encode($this->getUserAddress());
+        $snap['snapName'] = $this->products[0]['name'];
+        $snap['snapImg'] = $this->products[0]['main_img_Url'];
+        if (count($this->products) > 1) {
+            $snap['snapName'] .= '等';
+        }
+    }
+
+    private function getUserAddress()
+    {
+        $userAddress = UserAddress::where('user_id', '=', $this->uid)
+            ->find();
+        if (!$userAddress) {
+            throw new UserException([
+                'msg' => '用户收货地址不存在，下单失败！',
+                'errorCode' => 60001,
+
+            ]);
+        }
+        return $userAddress->toArray();
     }
 
     // 获取订单的状态
@@ -39,8 +136,10 @@ class Order
         $status = [
             'pass' => true,
             'orderPrice' => 0,
+            'totalCount' => 0,
             'pStatusArray' => []
         ];
+        // 循环用户传输过来的oProduct（商品条目）
         foreach ($this->oProducts as $oProduct) {
             $pStatus = $this->getProductStatus(
                 $oProduct['product_id'], $oProduct['count'], $this->products
@@ -48,7 +147,9 @@ class Order
             if (!$pStatus['haveStock']) {
                 $status['pass'] = false;
             }
+            // orderPrice(订单总价) totalPrice（单个商品价格）
             $status['orderPrice'] += $pStatus['totalPrice'];
+            $status['totalCount'] += $pStatus['count'];
             array_push($status['pStatusArray'], $pStatus);
         }
         return $status;
@@ -58,6 +159,7 @@ class Order
     {
         $pIndex = -1;
         // 保存商品的某一个详细信息
+        // haveStock库存有无
         $pStatus = [
             'id' => null,
             'haveStock' => false,
