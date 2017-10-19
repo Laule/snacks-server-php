@@ -9,6 +9,7 @@
 namespace app\api\validate;
 
 
+use app\lib\exception\ParameterException;
 use app\lib\exception\ProductException;
 
 class OrderPlace extends BaseValidate
@@ -30,7 +31,7 @@ class OrderPlace extends BaseValidate
                 ]
             );
         }
-        if (is_array($values)) {
+        if (!is_array($values)) {
             throw new ProductException([
                 'msg' => '商品列表不能为空'
             ]);

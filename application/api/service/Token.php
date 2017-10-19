@@ -51,7 +51,7 @@ class Token
             }
         }
     }
-
+    // 根据Token 获取 uid
     public static function getCurrentUid()
     {
         //token
