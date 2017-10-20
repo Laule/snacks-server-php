@@ -17,6 +17,7 @@ use app\lib\exception\ProductException;
 use app\lib\exception\UserException;
 use app\api\model\Order as OrderModel;
 //  哈哈哈~ 这个引用错了(本 service)，花了我好长时间 。
+use think\Db;
 use think\Exception;
 
 class Order
@@ -52,6 +53,9 @@ class Order
 
     private function createOrder($snap)
     {
+        // 要么一起执行，要么都不执行
+        // 开始事务
+        Db::startTrans();
         // 对复杂的业务操作 或 数据库操作 最好加一个异常处理
         try {
             $orderNo = $this->makeOrderNo();
@@ -76,6 +80,8 @@ class Order
             }
             $orderProduct = new OrderProduct();
             $orderProduct->saveAll($this->oProducts);
+            // 提交事务
+            Db::commit();
             return
                 [
                     'order_no' => $orderNo,
@@ -83,6 +89,8 @@ class Order
                     'order_time' => $create_time
                 ];
         } catch (Exception $ex) {
+            // 事务回滚（就是防止一个操作执行 ， 其它个不执行）
+            Db::rollback();
             throw $ex;
         }
     }
