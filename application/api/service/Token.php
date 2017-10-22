@@ -51,6 +51,7 @@ class Token
             }
         }
     }
+
     // 根据Token 获取 uid
     public static function getCurrentUid()
     {
@@ -58,7 +59,8 @@ class Token
         $uid = self::getCurrentTokenVar('uid');
         return $uid;
     }
-       // 用户和管理都可以访问的接口权限
+
+    // 用户和管理都可以访问的接口权限
     public static function needPrimaryScope()
     {
         $scope = self::getCurrentTokenVar('scope');
@@ -72,7 +74,8 @@ class Token
             throw new TokenException();
         }
     }
-      // 只有用户才能访问的接口权限
+
+    // 只有用户才能访问的接口权限
     public static function needExclusiveScope()
     {
         $scope = self::getCurrentTokenVar('scope');
@@ -85,5 +88,18 @@ class Token
         } else {
             throw new TokenException();
         }
+    }
+
+    public static function isValidOperate($checkedUID)
+    {
+        if (!$checkedUID) {
+            throw new Exception('检查UID时，必须携带一个待检查的UID');
+        }
+        $currentOperateUID = self::getCurrentUid();
+        if ($currentOperateUID == $checkedUID) {
+            return true;
+        }
+        return false;
+
     }
 }

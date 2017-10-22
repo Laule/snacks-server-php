@@ -50,6 +50,12 @@ Route::post('api/:version/address', 'api/:version.Address/createOrUpdateAddress'
 
 Route::post('api/:version/order', 'api/:version.Order/placeOrder');
 
+// 微信支付
+Route::post('api/:version/pay/pre_order', 'api/:version.Pay/getPreOrder');
+
+// 微信回调通知接口
+Route::post('api/:version/pay/notify', 'api/:version.Pay/receiveNotify');
+
 
 //测试接口
 

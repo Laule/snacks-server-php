@@ -7,5 +7,6 @@
  */
 return
     [
-        'token_salt' => 'HHsTieBU377mJtKr'
+        'token_salt' => 'HHsTieBU377mJtKr',
+        'pay_back_url'=>'https://www.baidu.com'
     ];

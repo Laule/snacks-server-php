@@ -106,8 +106,7 @@ class Order
                 '%02d', rand(0, 99));
         return $orderSn;
     }
-    
-    
+
 
     // 生成订单快照
     private function snapOrder($status)
@@ -148,6 +147,18 @@ class Order
         return $userAddress->toArray();
     }
 
+    // Pay 库存量检测
+    public function checkOrderStock($orderID)
+    {
+        $oProducts = OrderProduct::where('order_id', '=', $orderID)
+            ->select();
+        $this->oProducts = $oProducts;
+        $this->products = $this->getProductsByOrder($oProducts);
+        $status = $this->getOrderStatus();
+        return $status;
+    }
+
+
     // 获取订单的状态
     private function getOrderStatus()
     {
@@ -172,6 +183,7 @@ class Order
         }
         return $status;
     }
+
     // 用户传递过来订单列表的某一条字段[商品ID，总数，数据库查询到的一组商品集合]
     private function getProductStatus($oPID, $oCount, $products)
     {
