@@ -9,4 +9,5 @@ return
     [
         'token_salt' => 'HHsTieBU377mJtKr',
         'pay_back_url'=>'https://www.baidu.com'
+        // 反向代理 Ngrok(慢)
     ];
