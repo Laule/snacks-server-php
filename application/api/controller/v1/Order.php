@@ -16,6 +16,7 @@ use app\api\service\Token;
 use app\api\service\Order as OrderService;
 use app\api\model\Order as OrderModel;
 use app\api\validate\PaginParameter;
+use app\api\service\Token as TokenService;
 use app\lib\exception\OrderException;
 
 class Order extends BaseController

@@ -50,6 +50,11 @@ Route::post('api/:version/token/verify', 'api/:version.Token/verifyToken');
 //用户地址
 Route::post('api/:version/address', 'api/:version.Address/createOrUpdateAddress');
 
+// 获取用户地址
+
+Route::get('api/:version/address', 'api/:version.Address/getUserAddress');
+
+
 //订单
 
 Route::post('api/:version/order', 'api/:version.Order/placeOrder');
