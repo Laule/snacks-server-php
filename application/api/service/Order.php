@@ -178,7 +178,7 @@ class Order
             }
             // orderPrice(订单总价) totalPrice（单个商品价格）
             $status['orderPrice'] += $pStatus['totalPrice'];
-            $status['totalCount'] += $pStatus['count'];
+            $status['totalCount'] += $pStatus['counts'];
             array_push($status['pStatusArray'], $pStatus);
         }
         return $status;
@@ -193,9 +193,11 @@ class Order
         $pStatus = [
             'id' => null,
             'haveStock' => false,
-            'count' => 0,
+            'counts' => 0,
+            'price' => 0,
             'name' => '',
-            'totalPrice' => ''
+            'totalPrice' => 0,
+            'main_img_url' => null
         ];
         // 根据商品ID 查找商品集合中的某一项 ，若有 $pIndex 赋新值
         for ($i = 0; $i < count($products); $i++) {
@@ -213,7 +215,9 @@ class Order
             $product = $products[$pIndex];
             $pStatus['id'] = $product['id'];
             $pStatus['name'] = $product['name'];
-            $pStatus['count'] = $oCount;
+            $pStatus['counts'] = $oCount;
+            $pStatus['price'] = $product['price'];
+            $pStatus['main_img_url'] = $product['main_img_url'];
             $pStatus['totalPrice'] = $product['price'] * $oCount;
             if ($product['stock'] - $oCount >= 0) {
                 $pStatus['haveStock'] = true;
